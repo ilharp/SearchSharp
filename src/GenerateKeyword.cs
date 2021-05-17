@@ -9,7 +9,7 @@ namespace SearchSharp
     {
         private static readonly Regex LetterOrNumCharRegex = new("^[a-zA-Z0-9]+$");
 
-        public Collection<string> GenerateChar(char c)
+        public Collection<string> GenerateKeyword(char c)
         {
             string cString = c.ToString();
 
