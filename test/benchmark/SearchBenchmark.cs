@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+using System.Threading.Tasks;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using SearchSharp;
@@ -28,7 +29,10 @@ namespace benchmark
                 EnableChinesePinyinSearch = true
             };
             storage.Add(_searchBenchmarkData.ChineseSearchItemData, x => x);
-            foreach (string searchText in _searchBenchmarkData.ChineseSearchTextData) _ = storage.Search(searchText);
+
+            Parallel.ForEach(
+                _searchBenchmarkData.ChineseSearchTextData,
+                searchText => storage.Search(searchText));
         }
 
         [Benchmark]
@@ -36,7 +40,10 @@ namespace benchmark
         {
             SearchStorage<string> storage = new();
             storage.Add(_searchBenchmarkData.SearchItemData, x => x);
-            foreach (string searchText in _searchBenchmarkData.SearchTextData) _ = storage.Search(searchText);
+
+            Parallel.ForEach(
+                _searchBenchmarkData.SearchTextData,
+                searchText => storage.Search(searchText));
         }
     }
 
