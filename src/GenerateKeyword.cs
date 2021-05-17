@@ -5,7 +5,7 @@ using Microsoft.International.Converters.PinYinConverter;
 
 namespace SearchSharp
 {
-    public partial class Search<T>
+    public partial class SearchStorage<T>
     {
         private static readonly Regex LetterOrNumCharRegex = new("^[a-zA-Z0-9]+$");
 
