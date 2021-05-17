@@ -34,7 +34,7 @@ namespace SearchSharp
             else if (LetterOrNumCharRegex.IsMatch(cString))
             {
                 result.Add(cString.ToLower());
-                result.Add(cString.ToUpper());
+                // result.Add(cString.ToUpper()); // Search() method uses searchText.ToLower()
             }
 
             return result;
