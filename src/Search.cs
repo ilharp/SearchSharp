@@ -22,18 +22,19 @@ namespace SearchSharp
         {
             foreach (KeyValuePair<string, Node> edge in node.Edges)
             {
-                if (edge.Key.StartsWith(searchText) ||
-                    searchText.StartsWith(edge.Key))
-                {
-                    if (edge.Value.IsTerminal)
-                        foreach (T item in edge.Value.Items)
-                            result.Add(item);
+                if (!edge.Key.StartsWith(searchText) &&
+                    !searchText.StartsWith(edge.Key)) continue;
 
-                    if (edge.Key.Length < searchText.Length)
-                        SearchFromStart(edge.Value, searchText.Substring(edge.Key.Length), result);
-                    else if (edge.Key.Length > searchText.Length)
-                        GetAllValues(edge.Value, result);
-                }
+                if (edge.Value.IsTerminal &&
+                    (searchText == edge.Key ||
+                       !searchText.StartsWith(edge.Key)))
+                    foreach (T item in edge.Value.Items)
+                        result.Add(item);
+
+                if (edge.Key.Length < searchText.Length)
+                    SearchFromStart(edge.Value, searchText.Substring(edge.Key.Length), result);
+                else if (edge.Key.Length > searchText.Length)
+                    GetAllValues(edge.Value, result);
             }
         }
 
