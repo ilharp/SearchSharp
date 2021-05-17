@@ -11,9 +11,6 @@ namespace benchmark
     [MarkdownExporter]
     [RPlotExporter]
     [AllStatisticsColumn]
-    [MinColumn]
-    [MaxColumn]
-    [MemoryDiagnoser]
     public class SearchBenchmark
     {
         private SearchBenchmarkData _searchBenchmarkData;
