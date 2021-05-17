@@ -102,7 +102,11 @@ namespace SearchSharp
                 while (currentPtr < endPtr)
                 {
                     Collection<string> keywords = GenerateKeyword(*currentPtr);
-                    if (!keywords.Any()) continue;
+                    if (!keywords.Any())
+                    {
+                        currentPtr++;
+                        continue;
+                    }
 
                     Collection<Node> nextNodes = new();
 
