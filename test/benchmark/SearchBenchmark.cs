@@ -1,25 +1,47 @@
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
-using SearchSharp;
-using SearchSharp.Test.Benchmark;
 
-namespace benchmark
+namespace SearchSharp.Test.Benchmark
 {
     [SimpleJob(RuntimeMoniker.CoreRt50)]
     [MarkdownExporter]
     [RPlotExporter]
-    [AllStatisticsColumn]
+    [MinColumn]
+    [MaxColumn]
+    [MeanColumn]
+    [MedianColumn]
+    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByMethod)]
     public class SearchBenchmark
     {
+        private const int SearchTextCount = 1000;
+        private Random _random;
         private SearchBenchmarkData _searchBenchmarkData;
 
+        [Params(100, 10000, 100000)]
+        public int ItemCount;
+
         [GlobalSetup]
-        public void GlobalSetup() => _searchBenchmarkData = new();
+        public void GlobalSetup()
+        {
+            _searchBenchmarkData = new(ItemCount, SearchTextCount);
+            _random = new();
+        }
 
         [Benchmark]
-        public void ChineseSearchBenchmark()
+        public HashSet<string> NormalSearchBenchmark()
+        {
+            SearchStorage<string> storage = new();
+            storage.Add(_searchBenchmarkData.SearchItemData, x => x);
+
+            return storage.Search(_searchBenchmarkData.SearchTextData[_random.Next(SearchTextCount)]);
+        }
+
+        [Benchmark]
+        public HashSet<string> ChineseSearchBenchmark()
         {
             SearchStorage<string> storage = new()
             {
@@ -27,28 +49,13 @@ namespace benchmark
             };
             storage.Add(_searchBenchmarkData.ChineseSearchItemData, x => x);
 
-            Parallel.ForEach(
-                _searchBenchmarkData.ChineseSearchTextData,
-                searchText => storage.Search(searchText));
-        }
-
-        [Benchmark]
-        public void NormalSearchBenchmark()
-        {
-            SearchStorage<string> storage = new();
-            storage.Add(_searchBenchmarkData.SearchItemData, x => x);
-
-            Parallel.ForEach(
-                _searchBenchmarkData.SearchTextData,
-                searchText => storage.Search(searchText));
+            return storage.Search(_searchBenchmarkData.ChineseSearchTextData[_random.Next(SearchTextCount)]);
         }
     }
 
     public static class Program
     {
-        public static void Main(string[] args)
-        {
+        public static void Main(string[] args) =>
             BenchmarkRunner.Run<SearchBenchmark>();
-        }
     }
 }
