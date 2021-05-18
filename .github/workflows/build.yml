@@ -13,7 +13,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - name: Build and Pack
-        run: ./build.sh Pack --configuration Release
+        run: |
+          chmod +x ./build.sh
+          ./build.sh Pack --configuration Release
       - name: Push Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -30,4 +32,6 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - name: Test
-        run: ./build.sh Test --configuration Release
+        run: |
+          chmod +x ./build.sh
+          ./build.sh Test --configuration Release
