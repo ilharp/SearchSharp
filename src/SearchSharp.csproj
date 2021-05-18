@@ -5,6 +5,16 @@
     <RootNamespace>SearchSharp</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <PackageId>SearchSharp</PackageId>
+    <Title>SearchSharp</Title>
+    <Authors>Il Harper</Authors>
+    <Description>Lightweight and efficient keyword search utility.</Description>
+    <Copyright>2021 Il Harper</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Afanyiyu/SearchSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Afanyiyu/SearchSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>search,keyword,searchsharp</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
