@@ -4,6 +4,7 @@ using Nuke.Common.Execution;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Utilities.Collections;
@@ -68,7 +69,9 @@ class Build : NukeBuild
                 .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetInformationalVersion(GitVersion.InformationalVersion)
                 .EnableNoRestore()
-                .SetOutputDirectory(DistDirectory));
+                .SetOutputDirectory(DistDirectory)
+                .SetProcessArgumentConfigurator(a =>
+                    a.Add("/property:PackageVersion=" + GitVersion.SemVer)));
         });
 
     Target Test => _ => _
