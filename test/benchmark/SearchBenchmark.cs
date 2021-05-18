@@ -18,8 +18,19 @@ namespace SearchSharp.Test.Benchmark
     public class SearchBenchmark
     {
         private const int SearchTextCount = 1000;
+
         private Random _random;
         private SearchBenchmarkData _searchBenchmarkData;
+
+        private readonly SearchStorage<string> _normalSearchData = new();
+        private readonly SearchStorage<string> _chineseCharSearchData = new()
+        {
+            Mode = CharParseMode.EnableChineseCharSearch
+        };
+        private readonly SearchStorage<string> _pinyinSearchData = new()
+        {
+            Mode = CharParseMode.EnablePinyinSearch
+        };
 
         [Params(100, 10000, 100000)]
         public int ItemCount;
@@ -29,28 +40,23 @@ namespace SearchSharp.Test.Benchmark
         {
             _searchBenchmarkData = new(ItemCount, SearchTextCount);
             _random = new();
+
+            _normalSearchData.Add(_searchBenchmarkData.SearchItemData, x => x);
+            _chineseCharSearchData.Add(_searchBenchmarkData.ChineseSearchItemData, x => x);
+            _pinyinSearchData.Add(_searchBenchmarkData.ChineseSearchItemData, x => x);
         }
 
         [Benchmark]
-        public HashSet<string> NormalSearchBenchmark()
-        {
-            SearchStorage<string> storage = new();
-            storage.Add(_searchBenchmarkData.SearchItemData, x => x);
-
-            return storage.Search(_searchBenchmarkData.SearchTextData[_random.Next(SearchTextCount)]);
-        }
+        public HashSet<string> NormalSearchBenchmark() =>
+            _normalSearchData.Search(_searchBenchmarkData.SearchTextData[_random.Next(SearchTextCount)]);
 
         [Benchmark]
-        public HashSet<string> ChineseSearchBenchmark()
-        {
-            SearchStorage<string> storage = new()
-            {
-                EnableChinesePinyinSearch = true
-            };
-            storage.Add(_searchBenchmarkData.ChineseSearchItemData, x => x);
+        public HashSet<string> ChineseCharSearchBenchmark() =>
+            _chineseCharSearchData.Search(_searchBenchmarkData.ChineseSearchTextData[_random.Next(SearchTextCount)]);
 
-            return storage.Search(_searchBenchmarkData.ChineseSearchTextData[_random.Next(SearchTextCount)]);
-        }
+        [Benchmark]
+        public HashSet<string> PinyinSearchBenchmark() =>
+            _pinyinSearchData.Search(_searchBenchmarkData.ChineseSearchTextData[_random.Next(SearchTextCount)]);
     }
 
     public static class Program

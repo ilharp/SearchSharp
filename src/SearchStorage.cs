@@ -30,7 +30,7 @@ namespace SearchSharp
 
         #region Configuration
 
-        public bool EnableChinesePinyinSearch;
+        public CharParseMode Mode = CharParseMode.Default;
 
         #endregion
 

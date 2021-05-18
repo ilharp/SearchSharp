@@ -9,25 +9,28 @@ namespace SearchSharp
     {
         private static readonly Regex LetterOrNumCharRegex = new("^[a-zA-Z0-9]+$");
 
-        public Collection<string> GenerateKeyword(char c)
+        private Collection<string> GenerateKeyword(char c)
         {
             string cString = c.ToString();
 
             Collection<string> result = new();
 
-            if (EnableChinesePinyinSearch &&
+            if (CharParseMode.EnableChineseCharSearch == (Mode & CharParseMode.EnableChineseCharSearch) &&
                 ChineseChar.IsValidChar(c))
             {
                 // Chinese char
 
-                foreach (string s in new ChineseChar(c).Pinyins
-                    //.Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Select(x => Regex.Replace(x, @"\d", "").ToLower())
-                    .Distinct())
-                    result.Add(s); // Pinyin
+                if (CharParseMode.EnablePinyinSearch == (Mode & CharParseMode.EnablePinyinSearch))
+                {
+                    foreach (string s in new ChineseChar(c).Pinyins
+                        //.Where(x => !string.IsNullOrWhiteSpace(x))
+                        .Select(x => Regex.Replace(x, @"\d", "").ToLower())
+                        .Distinct())
+                        result.Add(s); // Pinyin
 
-                foreach (string firstChar in result.Select(x => x.Substring(0, 1)).ToArray())
-                    result.Add(firstChar); // 1st char
+                    foreach (string firstChar in result.Select(x => x.Substring(0, 1)).ToArray())
+                        result.Add(firstChar); // 1st char
+                }
 
                 result.Add(cString); // Original Chinese char
             }

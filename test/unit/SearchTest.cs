@@ -12,7 +12,7 @@ namespace SearchSharp.Test
 
         private static SearchStorage<string> _storage;
 
-        public static SearchStorage<string> Storage
+        private static SearchStorage<string> Storage
         {
             get
             {
@@ -20,7 +20,7 @@ namespace SearchSharp.Test
 
                 _storage = new()
                 {
-                    EnableChinesePinyinSearch = true
+                    Mode = CharParseMode.EnablePinyinSearch
                 };
 
                 _storage
