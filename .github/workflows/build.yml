@@ -1,0 +1,33 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  pack:
+    name: Pack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build and Pack
+        run: ./build.sh Pack --configuration Release
+      - name: Push Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: SearchSharp-${{ github.sha }}
+          path: dist/
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Test
+        run: ./build.sh Test --configuration Release
