@@ -11,45 +11,50 @@
 
 </div>
 
-## 这是……
+# 这是……
 
 SearchSharp 是一个轻量、高效的关键词搜索工具，它可以用来进行关键词搜索，从一组对象中搜索到键值相匹配的对象。
 
-## 这不是……
+# 这不是……
 
-- SearchSharp **IS NOT a search engine**. It's a search utility to let you search in a small set of objects.
+- SearchSharp **不是搜索引擎**。它只是一个搜索库，允许你在一小组对象中进行关键字搜索。
 
-- SearchSharp **IS NOT a search tool**. SearchSharp doesn't have a CLI or GUI, and you cannot use SearchSharp to search files or web directly.
+- SearchSharp **不是搜索工具**。SearchSharp 不含 CLI 或 GUI，你也不能用它来搜索文件或网络。
 
-- SearchSharp **IS NOT a Full Text search library**. Although you can add `string`s into the search storage and set `x => x`, you shouldn't use SearchSharp to perform Full Text search. This can cause memory and performance issues.
+- SearchSharp **不是一个全文搜索工具**。尽管你可以在搜索对象中添加字符串并且设置 `x => x`，你不应该使用 SearchSharp 进行全文搜索。这会导致严重的内存和性能问题。
 
-## Features
+# 功能
 
-### Lightweight and Fast
+## 轻量且高效
 
-See [Benchmark](#Benchmark).
+参见 [Benchmark](#Benchmark)。
 
-### Support Part-Spelling Search
+## 易于使用
 
-Type...|To Search...
+参见 [使用](#使用)。
+
+## 支持部分搜索
+
+键入...|以搜索...
 -|-
 arp|SearchSharp
 sea|Search
 searchwithoutspace|Search Without Space
 
-### Support Chinese/Pinyin Search
+## 支持汉字/拼音/拼音首字母搜索
 
-Type...|To Search...
+键入...|以搜索...
 -|-
-ssnr|搜索内容
+sousuoneirong|搜索内容
 sharpss|SearchSharp 搜索
 pptyshi|PPT 演示
 szmss|首字母搜索
 py汉字hhsousuo|拼音汉字混合搜索
+buf|部分拼音搜索
 
-## Install
+# 安装
 
-You can install SearchSharp from [NuGet](https://www.nuget.org/packages/SearchSharp) or [GitHub Packages](https://github.com/Afanyiyu/SearchSharp/packages/797283).
+你可以从 [NuGet](https://www.nuget.org/packages/SearchSharp) 或 [GitHub Packages](https://github.com/Afanyiyu/SearchSharp/packages/797283) 上安装 SearchSharp。
 
 ```ps1
 # Use .NET CLI
@@ -58,19 +63,142 @@ dotnet add package SearchSharp
 Install-Package SearchSharp
 ```
 
-## Usage
+# 使用
 
-TODO
+## 创建搜索索引
 
-## Benchmark
+要创建搜索索引，我们需要提供 **数据类型** 和 **数据集**。
 
-- NormalSearchBenchmark: Search for items that contain only letters.
+比如：
 
-- ChineseCharSearchBenchmark: Search for items that contain Chinese characters, with `EnableChineseCharSearch` enabled.
+```cs
+// 数据类型
+public record MyData
+{
+    public string MySearchKey;
+    public int MyValue;
+}
 
-- PinyinSearchBenchmark: Search for items that contain Chinese characters, with `EnablePinyinSearch` enabled.
+// 创建数据集
+List<MyData> myDataSet = new()
+{
+    new() {MySearchKey = "TheFirstNumber", MyValue = 1},
+    new() {MySearchKey = "TheSecondNumber", MyValue = 2}
+};
+```
 
-### Result
+首先，初始化一个新的 `SearchStorage<T>`，其中 `T` 就是我们的数据类型。本例中，`T` 是 `MyData`。
+
+```cs
+SearchStorage<MyData> storage = new();
+```
+
+如果你需要汉字搜索，设置 `Mode` 为 `CharParseMode.EnableChineseCharSearch`。
+
+```cs
+SearchStorage<MyData> storage = new()
+{
+    Mode = CharParseMode.EnableChineseCharSearch
+};
+```
+
+如果你需要拼音搜索，设置 `Mode` 为 `CharParseMode.EnablePinyinSearch`。这将同时启用 `CharParseMode.EnableChineseCharSearch`。
+
+```cs
+SearchStorage<MyData> storage = new()
+{
+    Mode = CharParseMode.EnablePinyinSearch
+};
+```
+
+## 添加数据
+
+接着，往 `storage` 里添加数据。
+
+### 基本
+
+```cs
+foreach (MyData data in myDataSet) storage.Add(data.MySearchKey, data);
+```
+
+### 重载
+
+`SearchStorage<T>.Add()` 有许多重载方法可供使用。
+
+重载|用法
+-|-
+`Add(string key, T value)`|`storage.Add("key", item);`
+
+### `Tuple` 和 `ValueTuple` 支持
+
+重载|用法
+-|-
+`Add((string Key, T Value) item)`|`storage.Add(("key", item));`
+`Add(Tuple<string, T> item)`|`storage.Add(new Tuple<string, MyData>("key", item));`
+
+### `KeyValuePair` 支持
+
+重载|用法
+-|-
+`Add(KeyValuePair<string, T> item)`|`foreach (KeyValuePair<string, MyData> pair in myDataDictionary) storage.Add(pair);`
+
+### `IEnumerable<T>` 支持（类似 `DynamicData.AddRange()`）
+
+重载|用法
+-|-
+`Add(IEnumerable<(string Key, T Value)> items)`|`storage.Add(myValueTupleList);`
+`Add(IEnumerable<Tuple<string, T>> items)`|`storage.Add(myTupleList);`
+`Add(IEnumerable<KeyValuePair<string, T>> items)`|`storage.Add(myDictionary);`
+
+### 使用 Lambda 获取键
+
+重载|用法
+-|-
+`Add(T item, Func<T, string> key)`|`storage.Add(item, x => x.Key);`
+`Add(IEnumerable<T> items, Func<T, string> key)`|`storage.Add(itemList, x => x.Key);`
+
+### 链式调用
+
+```cs
+storage
+    .Add("TheFirstItem", item1)
+    .Add("TheSecondItem", item2);
+```
+
+在添加完数据之后，索引也随之建立。现在，我们可以进行搜索了。
+
+## 搜索
+
+使用 `SearchStorage<T>.Search()` 方法进行搜索。
+
+```cs
+HashSet<MyData> result = storage.Search("num");
+```
+
+`SearchStorage<T>.Search()` 将会返回一个 `HashSet<T>` 存放结果。
+
+这是在即时窗口中 `result` 显示的值：
+
+```
+result
+Count = 2
+    [0]: {MyData { MySearchKey = TheFirstNumber, MyValue = 1 }}
+    [1]: {MyData { MySearchKey = TheSecondNumber, MyValue = 2 }}
+```
+
+## 完整示例
+
+参见 [SearchSharpIntro](https://github.com/Afanyiyu/SearchSharp/tree/master/samples/SearchSharpIntro)。
+
+# Benchmark
+
+- NormalSearchBenchmark: 搜索仅包含英文字符的项目。
+
+- ChineseCharSearchBenchmark: 启用 `EnableChineseCharSearch` 选项，使用汉字搜索包含中文字符的项目。
+
+- PinyinSearchBenchmark: 启用 `EnablePinyinSearch` 选项，使用汉字搜索包含中文字符的项目。
+
+## 结果
 
 ``` ini
 
@@ -98,14 +226,14 @@ Job=CoreRt 5.0  Runtime=CoreRt 5.0
 |      **PinyinSearchBenchmark** |     **10000** |  **1,018,983.41 μs** |  **18,426.030 μs** |  **27,579.215 μs** |    **987,004.70 μs** |  **1,088,789.00 μs** |  **1,011,044.00 μs** |
 |      **PinyinSearchBenchmark** |    **100000** | **10,185,748.11 μs** | **133,558.292 μs** | **111,527.223 μs** | **10,041,883.80 μs** | **10,461,182.00 μs** | **10,159,970.30 μs** |
 
-## Bugs & Issues
+# Bug & 问题
 
-Feel free to open issues.
+请自由提交问题。
 
-## Contributions
+# 贡献
 
-PRs are welcome! Feel free to contribute on this project.
+我们欢迎合并请求！请自由在这个项目上做贡献。
 
-## LICENSE
+# 许可
 
 MIT

@@ -11,11 +11,11 @@
 
 </div>
 
-## What It is
+# What It is
 
 SearchSharp is a lightweight keyword search utility. It can be used for **keyword searching** - searching for objects with matching keys from a set of objects.
 
-## What It is Not
+# What It is Not
 
 - SearchSharp **IS NOT a search engine**. It's a search utility to let you search in a small set of objects.
 
@@ -23,13 +23,17 @@ SearchSharp is a lightweight keyword search utility. It can be used for **keywor
 
 - SearchSharp **IS NOT a Full Text search library**. Although you can add `string`s into the search storage and set `x => x`, you shouldn't use SearchSharp to perform Full Text search. This can cause memory and performance issues.
 
-## Features
+# Features
 
-### Lightweight and Fast
+## Lightweight and Fast
 
 See [Benchmark](#Benchmark).
 
-### Support Part-Spelling Search
+## 易于使用
+
+See [Usage](#Usage)。
+
+## Support Part-Spelling Search
 
 Type...|To Search...
 -|-
@@ -37,17 +41,18 @@ arp|SearchSharp
 sea|Search
 searchwithoutspace|Search Without Space
 
-### Support Chinese/Pinyin Search
+## Support Chinese/Pinyin Search
 
 Type...|To Search...
 -|-
-ssnr|搜索内容
+sousuoneirong|搜索内容
 sharpss|SearchSharp 搜索
 pptyshi|PPT 演示
 szmss|首字母搜索
 py汉字hhsousuo|拼音汉字混合搜索
+buf|部分拼音搜索
 
-## Install
+# Install
 
 You can install SearchSharp from [NuGet](https://www.nuget.org/packages/SearchSharp) or [GitHub Packages](https://github.com/Afanyiyu/SearchSharp/packages/797283).
 
@@ -58,11 +63,134 @@ dotnet add package SearchSharp
 Install-Package SearchSharp
 ```
 
-## Usage
+# Usage
 
-TODO
+## Create Search Index
 
-## Benchmark
+To create a search index, we need to provide the **data type** and the **data set** first.
+
+For example:
+
+```cs
+// Data Type
+public record MyData
+{
+    public string MySearchKey;
+    public int MyValue;
+}
+
+// Create DataSet
+List<MyData> myDataSet = new()
+{
+    new() {MySearchKey = "TheFirstNumber", MyValue = 1},
+    new() {MySearchKey = "TheSecondNumber", MyValue = 2}
+};
+```
+
+First, create a new `SearchStorage<T>` where `T` is our data type (`MyData` in this example).
+
+```cs
+SearchStorage<MyData> storage = new();
+```
+
+If you need Chinese char search, set `Mode` to `CharParseMode.EnableChineseCharSearch`.
+
+```cs
+SearchStorage<MyData> storage = new()
+{
+    Mode = CharParseMode.EnableChineseCharSearch
+};
+```
+
+If you need Pinyin search, set `Mode` to `CharParseMode.EnablePinyinSearch`. This will also enable `CharParseMode.EnableChineseCharSearch`.
+
+```cs
+SearchStorage<MyData> storage = new()
+{
+    Mode = CharParseMode.EnablePinyinSearch
+};
+```
+
+## Add Data
+
+Then, add data into this `storage`.
+
+### Basics
+
+```cs
+foreach (MyData data in myDataSet) storage.Add(data.MySearchKey, data);
+```
+
+### Overloads
+
+`SearchStorage<T>.Add()` has a lot of overloads.
+
+Overload|Usage
+-|-
+`Add(string key, T value)`|`storage.Add("key", item);`
+
+### `Tuple` and `ValueTuple` Support
+
+Overload|Usage
+-|-
+`Add((string Key, T Value) item)`|`storage.Add(("key", item));`
+`Add(Tuple<string, T> item)`|`storage.Add(new Tuple<string, MyData>("key", item));`
+
+### `KeyValuePair` Support
+
+Overload|Usage
+-|-
+`Add(KeyValuePair<string, T> item)`|`foreach (KeyValuePair<string, MyData> pair in myDataDictionary) storage.Add(pair);`
+
+### `IEnumerable<T>` Support (Like `DynamicData.AddRange()`)
+
+Overload|Usage
+-|-
+`Add(IEnumerable<(string Key, T Value)> items)`|`storage.Add(myValueTupleList);`
+`Add(IEnumerable<Tuple<string, T>> items)`|`storage.Add(myTupleList);`
+`Add(IEnumerable<KeyValuePair<string, T>> items)`|`storage.Add(myDictionary);`
+
+### Use Lambda to Get Key
+
+Overload|Usage
+-|-
+`Add(T item, Func<T, string> key)`|`storage.Add(item, x => x.Key);`
+`Add(IEnumerable<T> items, Func<T, string> key)`|`storage.Add(itemList, x => x.Key);`
+
+### Chaining
+
+```cs
+storage
+    .Add("TheFirstItem", item1)
+    .Add("TheSecondItem", item2);
+```
+
+After putting the items into the storage, the index was created. We can now perform search operations.
+
+## Search
+
+Use `SearchStorage<T>.Search()` method to search items.
+
+```cs
+HashSet<MyData> result = storage.Search("num");
+```
+
+`SearchStorage<T>.Search()` will return the list of result as a `HashSet<T>`.
+
+Here's the output of `result` in Immediate Window:
+
+```
+result
+Count = 2
+    [0]: {MyData { MySearchKey = TheFirstNumber, MyValue = 1 }}
+    [1]: {MyData { MySearchKey = TheSecondNumber, MyValue = 2 }}
+```
+
+## Full Sample
+
+See [SearchSharpIntro](https://github.com/Afanyiyu/SearchSharp/tree/master/samples/SearchSharpIntro).
+
+# Benchmark
 
 - NormalSearchBenchmark: Search for items that contain only letters.
 
@@ -70,7 +198,7 @@ TODO
 
 - PinyinSearchBenchmark: Search for items that contain Chinese characters, with `EnablePinyinSearch` enabled.
 
-### Result
+## Result
 
 ``` ini
 
@@ -98,14 +226,14 @@ Job=CoreRt 5.0  Runtime=CoreRt 5.0
 |      **PinyinSearchBenchmark** |     **10000** |  **1,018,983.41 μs** |  **18,426.030 μs** |  **27,579.215 μs** |    **987,004.70 μs** |  **1,088,789.00 μs** |  **1,011,044.00 μs** |
 |      **PinyinSearchBenchmark** |    **100000** | **10,185,748.11 μs** | **133,558.292 μs** | **111,527.223 μs** | **10,041,883.80 μs** | **10,461,182.00 μs** | **10,159,970.30 μs** |
 
-## Bugs & Issues
+# Bugs & Issues
 
 Feel free to open issues.
 
-## Contributions
+# Contributions
 
 PRs are welcome! Feel free to contribute on this project.
 
-## LICENSE
+# LICENSE
 
 MIT
