@@ -234,6 +234,10 @@ Job=CoreRt 5.0  Runtime=CoreRt 5.0
 
 我们欢迎合并请求！请自由在这个项目上做贡献。
 
+# 发行说明
+
+参见 [CHANGELOG.md](https://github.com/Afanyiyu/SearchSharp/blob/master/CHANGELOG.md)。
+
 # 许可
 
 MIT

@@ -234,6 +234,10 @@ Feel free to open issues.
 
 PRs are welcome! Feel free to contribute on this project.
 
+# Changelog
+
+See [CHANGELOG.md](https://github.com/Afanyiyu/SearchSharp/blob/master/CHANGELOG.md).
+
 # LICENSE
 
 MIT
