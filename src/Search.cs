@@ -33,7 +33,7 @@ namespace SearchSharp
 
                 if (edge.Key.Length < searchText.Length)
                     SearchFromStart(edge.Value, searchText.Substring(edge.Key.Length), result);
-                else if (edge.Key.Length > searchText.Length)
+                else
                     GetAllValues(edge.Value, result);
             }
         }
