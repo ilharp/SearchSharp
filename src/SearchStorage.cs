@@ -9,7 +9,7 @@ namespace SearchSharp
     {
         #region Trie Node
 
-        public class Node
+        private class Node
         {
             #region Items
 
