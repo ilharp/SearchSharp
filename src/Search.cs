@@ -2,6 +2,13 @@
 
 namespace SearchSharp
 {
+    /// <summary>
+    /// The search index storage.
+    /// </summary>
+    /// <remarks>
+    /// See <c>README.md</c> for more details.
+    /// </remarks>
+    /// <typeparam name="T">The data type.</typeparam>
     public partial class SearchStorage<T>
     {
         private static void GetAllValues(
@@ -52,6 +59,11 @@ namespace SearchSharp
             }
         }
 
+        /// <summary>
+        /// Search.
+        /// </summary>
+        /// <param name="searchText">The text for search.</param>
+        /// <returns>The search result as a <see cref="HashSet{T}"/> of <typeparamref name="T"/>s.</returns>
         public HashSet<T> Search(string searchText)
         {
             searchText = searchText.ToLower();
