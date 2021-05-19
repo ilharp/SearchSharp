@@ -26,7 +26,8 @@ namespace SearchSharp.Test
                 _storage
                     .Add("AA方式", "SEARCH_REAULT_A")
                     .Add("AA房十", "SEARCH_REAULT_B")
-                    .Add("AB模式", "SEARCH_REAULT_C");
+                    .Add("AB模式", "SEARCH_REAULT_C")
+                    .Add("SampleText", "SEARCH_REAULT_D");
 
                 return _storage;
             }
@@ -45,6 +46,16 @@ namespace SearchSharp.Test
         #endregion
 
         #region Tests
+
+        [Theory]
+        [InlineData("SampleText")]
+        [InlineData("pleTex")]
+        [InlineData("tex")]
+        public static void NormalSearchTest(string searchText) =>
+            Assert.True(
+                ValidateSearchResult(
+                    new() {"SEARCH_REAULT_D"},
+                    Storage.Search(searchText)));
 
         [Theory]
         [InlineData("aafa")]
