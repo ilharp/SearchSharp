@@ -29,7 +29,7 @@ SearchSharp is a lightweight keyword search utility. It can be used for **keywor
 
 See [Benchmark](#Benchmark).
 
-## 易于使用
+## Easy to Use
 
 See [Usage](#Usage)。
 

@@ -57,9 +57,9 @@ buf|部分拼音搜索
 你可以从 [NuGet](https://www.nuget.org/packages/SearchSharp) 或 [GitHub Packages](https://github.com/Afanyiyu/SearchSharp/packages/797283) 上安装 SearchSharp。
 
 ```ps1
-# Use .NET CLI
+# 使用 .NET CLI
 dotnet add package SearchSharp
-# Or use Package Manager
+# 或使用 NuGet 程序包管理器
 Install-Package SearchSharp
 ```
 
