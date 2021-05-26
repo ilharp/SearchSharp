@@ -31,7 +31,7 @@ See [Benchmark](#Benchmark).
 
 ## Easy to Use
 
-See [Usage](#Usage)。
+See [Usage](#Usage).
 
 ## Support Part-Spelling Search
 
